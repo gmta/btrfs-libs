@@ -1,6 +1,6 @@
 package nl.gmta.btrfs.structure.stream;
 
-public enum BtrfsAttributeType {
+enum BtrfsAttributeType {
     UUID           (0x01),
     CTRANSID       (0x02),
     INO            (0x03),

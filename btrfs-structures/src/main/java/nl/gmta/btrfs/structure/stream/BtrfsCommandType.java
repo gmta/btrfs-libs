@@ -1,6 +1,6 @@
 package nl.gmta.btrfs.structure.stream;
 
-public enum BtrfsCommandType {
+enum BtrfsCommandType {
     SUBVOL        (0x01),
     SNAPSHOT      (0x02),
     MKFILE        (0x03),
