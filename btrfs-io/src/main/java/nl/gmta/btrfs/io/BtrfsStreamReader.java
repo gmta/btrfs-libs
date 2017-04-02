@@ -15,6 +15,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsStreamCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsTimespec;
+import nl.gmta.btrfs.structure.stream.BtrfsUTimesCommand;
 
 public class BtrfsStreamReader implements AutoCloseable {
     private static final int VALUE_TYPE_TIMESPEC_SIZE = 12;
@@ -95,13 +96,10 @@ public class BtrfsStreamReader implements AutoCloseable {
         // Read command body
         switch (header.getCommand()) {
             case SNAPSHOT:
-                String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
-                UUID UUID = (UUID) this.readAttribute(BtrfsAttributeType.UUID);
-                long CTransID = (Long) this.readAttribute(BtrfsAttributeType.CTRANSID);
-                UUID cloneUUID = (UUID) this.readAttribute(BtrfsAttributeType.CLONE_UUID);
-                long cloneCTransID = (Long) this.readAttribute(BtrfsAttributeType.CLONE_CTRANSID);
-
-                command = new BtrfsSnapshotCommand(header, path, UUID, CTransID, cloneUUID, cloneCTransID);
+                command = this.readSnapshotCommand(header);
+                break;
+            case UTIMES:
+                command = this.readUTimesCommand(header);
                 break;
             default:
                 throw new BtrfsStructureException(String.format("Command not yet implemented: %s", header.getCommand()));
@@ -152,5 +150,24 @@ public class BtrfsStreamReader implements AutoCloseable {
 
         this.isHeaderRead = true;
         return new BtrfsStreamHeader(version);
+    }
+
+    private BtrfsSnapshotCommand readSnapshotCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        UUID UUID = (UUID) this.readAttribute(BtrfsAttributeType.UUID);
+        long CTransID = (Long) this.readAttribute(BtrfsAttributeType.CTRANSID);
+        UUID cloneUUID = (UUID) this.readAttribute(BtrfsAttributeType.CLONE_UUID);
+        long cloneCTransID = (Long) this.readAttribute(BtrfsAttributeType.CLONE_CTRANSID);
+
+        return new BtrfsSnapshotCommand(header, path, UUID, CTransID, cloneUUID, cloneCTransID);
+    }
+
+    private BtrfsUTimesCommand readUTimesCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        BtrfsTimespec atime = (BtrfsTimespec) this.readAttribute(BtrfsAttributeType.ATIME);
+        BtrfsTimespec mtime = (BtrfsTimespec) this.readAttribute(BtrfsAttributeType.MTIME);
+        BtrfsTimespec ctime = (BtrfsTimespec) this.readAttribute(BtrfsAttributeType.CTIME);
+
+        return new BtrfsUTimesCommand(header, path, atime, mtime, ctime);
     }
 }

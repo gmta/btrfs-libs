@@ -6,9 +6,7 @@ public abstract class BtrfsStreamCommand extends BtrfsStreamElement {
     protected final BtrfsStreamCommandHeader header;
 
     BtrfsStreamCommand(BtrfsStreamCommandHeader header) {
-        Objects.requireNonNull(header);
-
-        this.header = header;
+        this.header = Objects.requireNonNull(header);
     }
 
     public BtrfsStreamCommandHeader getHeader() {
