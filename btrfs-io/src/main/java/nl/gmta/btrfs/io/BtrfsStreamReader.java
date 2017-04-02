@@ -33,6 +33,12 @@ public class BtrfsStreamReader implements AutoCloseable {
         return this.readElement();
     }
 
+    private byte readByte() throws IOException {
+        byte result = (byte) this.is.read();
+        ++this.position;
+        return result;
+    }
+
     private byte[] readBytes(int length) throws IOException {
         byte[] buffer = new byte[length];
         int read = this.is.read(buffer);
@@ -58,8 +64,8 @@ public class BtrfsStreamReader implements AutoCloseable {
         // Read and verify magic (and NUL trail)
         byte[] magicExpect = BtrfsStreamHeader.MAGIC.getBytes(StandardCharsets.US_ASCII);
         byte[] magicActual = this.readBytes(magicExpect.length);
-        byte[] nulTrail = this.readBytes(1);
-        if (!Arrays.equals(magicExpect, magicActual) || (nulTrail[0] != 0)) {
+        byte nulTrail = this.readByte();
+        if (!Arrays.equals(magicExpect, magicActual) || (nulTrail != 0)) {
             throw new BtrfsStructureException("No btrfs stream header magic found");
         }
 
