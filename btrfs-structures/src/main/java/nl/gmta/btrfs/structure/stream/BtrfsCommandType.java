@@ -3,7 +3,7 @@ package nl.gmta.btrfs.structure.stream;
 import nl.gmta.btrfs.structure.shared.IdentifiableEnum;
 import nl.gmta.btrfs.structure.shared.IdentifiableEnumMap;
 
-enum BtrfsCommandType implements IdentifiableEnum<Integer> {
+public enum BtrfsCommandType implements IdentifiableEnum<Integer> {
     SUBVOL        (0x01),
     SNAPSHOT      (0x02),
     MKFILE        (0x03),

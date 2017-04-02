@@ -3,7 +3,7 @@ package nl.gmta.btrfs.structure.stream;
 import nl.gmta.btrfs.structure.shared.IdentifiableEnum;
 import nl.gmta.btrfs.structure.shared.IdentifiableEnumMap;
 
-enum BtrfsAttributeType implements IdentifiableEnum<Integer> {
+public enum BtrfsAttributeType implements IdentifiableEnum<Integer> {
     UUID           (0x01, BtrfsValueType.UUID),
     CTRANSID       (0x02, BtrfsValueType.U64),
     INO            (0x03, BtrfsValueType.U64),

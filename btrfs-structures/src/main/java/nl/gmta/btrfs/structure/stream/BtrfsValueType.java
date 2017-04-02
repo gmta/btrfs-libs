@@ -1,6 +1,6 @@
 package nl.gmta.btrfs.structure.stream;
 
-enum BtrfsValueType {
+public enum BtrfsValueType {
     U64,
     BINARY,
     STRING,
