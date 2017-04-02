@@ -91,9 +91,10 @@ public class BtrfsStreamReader implements AutoCloseable {
 
     private BtrfsStreamCommand readCommand() throws IOException {
         BtrfsStreamCommandHeader header = this.readCommandHeader();
-        BtrfsStreamCommand command;
+        long commandStartPosition = this.reader.getPosition();
 
         // Read command body
+        BtrfsStreamCommand command;
         switch (header.getCommand()) {
             case SNAPSHOT:
                 command = this.readSnapshotCommand(header);
@@ -105,7 +106,17 @@ public class BtrfsStreamReader implements AutoCloseable {
                 throw new BtrfsStructureException(String.format("Command not yet implemented: %s", header.getCommand()));
         }
 
-        // TODO: header length check
+        // Verify that the right number of bytes were read
+        long commandEndPosition = this.reader.getPosition();
+        int actualCommandLength = (int) (commandEndPosition - commandStartPosition);
+        if (actualCommandLength != header.getLength()) {
+            throw new BtrfsStructureException(String.format(
+                "Command length was %d but %d bytes were read",
+                header.getLength(),
+                actualCommandLength
+            ));
+        }
+
         // TODO: CRC check
 
         return command;
