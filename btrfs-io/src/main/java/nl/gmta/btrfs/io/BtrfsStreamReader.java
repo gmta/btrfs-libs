@@ -81,6 +81,9 @@ public class BtrfsStreamReader implements AutoCloseable {
 
     private int readLE32() throws IOException {
         byte[] intBytes = this.readBytes(4);
-        return (intBytes[3] << 24 | intBytes[2] << 16 | intBytes[1] << 8 | intBytes[0]);
+        return (intBytes[0] & 0xFF)
+            | ((intBytes[1] & 0xFF) << 8)
+            | ((intBytes[2] & 0xFF) << 16)
+            | ((intBytes[3] & 0xFF) << 24);
     }
 }
