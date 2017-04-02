@@ -1,6 +1,9 @@
 package nl.gmta.btrfs.structure.stream;
 
-enum BtrfsAttributeType {
+import nl.gmta.btrfs.structure.shared.IdentifiableEnum;
+import nl.gmta.btrfs.structure.shared.IdentifiableEnumMap;
+
+enum BtrfsAttributeType implements IdentifiableEnum<Integer> {
     UUID           (0x01, BtrfsValueType.UUID),
     CTRANSID       (0x02, BtrfsValueType.U64),
     INO            (0x03, BtrfsValueType.U64),
@@ -26,16 +29,23 @@ enum BtrfsAttributeType {
     CLONE_OFFSET   (0x17, BtrfsValueType.U64),
     CLONE_LEN      (0x18, BtrfsValueType.U64);
 
-    private int value;
-    private BtrfsValueType type;
+    private static IdentifiableEnumMap<Integer, BtrfsAttributeType> mapping = new IdentifiableEnumMap<>(BtrfsAttributeType.values());
 
-    BtrfsAttributeType(int value, BtrfsValueType type) {
-        this.value = value;
+    private final int id;
+    private final BtrfsValueType type;
+
+    BtrfsAttributeType(int id, BtrfsValueType type) {
+        this.id = id;
         this.type = type;
     }
 
-    public int getValue() {
-        return this.value;
+    public static BtrfsAttributeType getById(Integer id) {
+        return mapping.getById(id);
+    }
+
+    @Override
+    public Integer getId() {
+        return this.id;
     }
 
     public BtrfsValueType getType() {

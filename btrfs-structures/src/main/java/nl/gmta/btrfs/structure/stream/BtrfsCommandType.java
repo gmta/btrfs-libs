@@ -1,6 +1,9 @@
 package nl.gmta.btrfs.structure.stream;
 
-enum BtrfsCommandType {
+import nl.gmta.btrfs.structure.shared.IdentifiableEnum;
+import nl.gmta.btrfs.structure.shared.IdentifiableEnumMap;
+
+enum BtrfsCommandType implements IdentifiableEnum<Integer> {
     SUBVOL        (0x01),
     SNAPSHOT      (0x02),
     MKFILE        (0x03),
@@ -24,13 +27,20 @@ enum BtrfsCommandType {
     END           (0x15),
     UPDATE_EXTENT (0x16);
 
-    private int value;
+    private static final IdentifiableEnumMap<Integer, BtrfsCommandType> mapping = new IdentifiableEnumMap<>(BtrfsCommandType.values());
 
-    BtrfsCommandType(int value) {
-        this.value = value;
+    private final int id;
+
+    BtrfsCommandType(int id) {
+        this.id = id;
     }
 
-    public int getValue() {
-        return this.value;
+    public static BtrfsCommandType getById(Integer id) {
+        return mapping.getById(id);
+    }
+
+    @Override
+    public Integer getId() {
+        return this.id;
     }
 }
