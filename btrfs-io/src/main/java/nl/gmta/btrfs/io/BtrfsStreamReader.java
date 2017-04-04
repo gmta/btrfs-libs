@@ -123,15 +123,18 @@ public class BtrfsStreamReader implements AutoCloseable {
     }
 
     private BtrfsStreamCommandHeader readCommandHeader() throws IOException {
+        // Total length of command body after the header
         int length = this.reader.readLE32();
 
+        // The command type
         int commandValue = this.reader.readLE16();
         BtrfsCommandType command = BtrfsCommandType.getById(commandValue);
         if (command == null) {
             throw new BtrfsStructureException(String.format("Invalid command type: %d", commandValue));
         }
 
-        int crc = this.reader.readLE32();
+        // The CRC32 checksum of the header + body (w/ zeroes for the checksum value itself)
+        long crc = this.reader.readLE32() & 0xFFFFFFFFL;
 
         return new BtrfsStreamCommandHeader(length, command, crc);
     }
