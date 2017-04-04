@@ -2,6 +2,7 @@ package nl.gmta.btrfs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsTimespec;
 import nl.gmta.btrfs.structure.stream.BtrfsUTimesCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsWriteCommand;
 
 public class BtrfsStreamReader implements AutoCloseable {
     private static final int VALUE_TYPE_TIMESPEC_SIZE = 12;
@@ -106,6 +108,9 @@ public class BtrfsStreamReader implements AutoCloseable {
             case UTIMES:
                 command = this.readUTimesCommand(header);
                 break;
+            case WRITE:
+                command = this.readWriteCommand(header);
+                break;
             default:
                 throw new BtrfsStructureException(String.format("Command not yet implemented: %s", header.getCommand()));
         }
@@ -176,5 +181,21 @@ public class BtrfsStreamReader implements AutoCloseable {
         BtrfsTimespec ctime = (BtrfsTimespec) this.readAttribute(BtrfsAttributeType.CTIME);
 
         return new BtrfsUTimesCommand(header, path, atime, mtime, ctime);
+    }
+
+    @SuppressWarnings("resource")
+    private BtrfsWriteCommand readWriteCommand(BtrfsStreamCommandHeader header) throws IOException {
+        long fieldsStartPosition = this.reader.getPosition();
+
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        long fileOffset = (Long) this.readAttribute(BtrfsAttributeType.FILE_OFFSET);
+
+        long fieldsEndPosition = this.reader.getPosition();
+        int fieldsSize = (int) (fieldsEndPosition - fieldsStartPosition);
+        int dataSize = header.getLength() - fieldsSize;
+
+        ReadableByteChannel data = new SizedBinaryReader(this.reader, dataSize);
+
+        return new BtrfsWriteCommand(header, path, fileOffset, dataSize, data);
     }
 }
