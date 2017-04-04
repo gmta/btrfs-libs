@@ -31,7 +31,7 @@ public class BtrfsTimespec {
     @Override
     public String toString() {
         return String.format(
-            "%s{seconds=%d nanoSeconds=%d : repr=%s}",
+            "%s{seconds=%d nanoSeconds=%d : %s}",
             this.getClass().getSimpleName(),
             this.seconds,
             this.nanoSeconds,
