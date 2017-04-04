@@ -7,7 +7,7 @@ import nl.gmta.btrfs.io.exception.BtrfsStructureException;
 
 class DataReader implements AutoCloseable {
     private final InputStream is;
-    private long position = 0;
+    protected long position = 0;
 
     DataReader(InputStream is) {
         this.is = is;
@@ -38,7 +38,7 @@ class DataReader implements AutoCloseable {
             | ((long) (longBytes[0] & 0xFF) << 56);
     }
 
-    byte[] readBytes(int length) throws IOException {
+    protected byte[] readBytes(int length) throws IOException {
         byte[] buffer = new byte[length];
         int read = this.is.read(buffer);
         if (read < 0) {

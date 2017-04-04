@@ -23,11 +23,11 @@ public class BtrfsStreamReader implements AutoCloseable {
     private static final int VALUE_TYPE_UUID_SIZE = 16;
     private static final int SUPPORTED_VERSION = 1;
 
-    private final DataReader reader;
+    private final VerifyingDataReader reader;
     private boolean isHeaderRead = false;
 
     public BtrfsStreamReader(InputStream is) {
-        this.reader = new DataReader(is);
+        this.reader = new VerifyingDataReader(is);
     }
 
     @Override
@@ -90,8 +90,12 @@ public class BtrfsStreamReader implements AutoCloseable {
     }
 
     private BtrfsStreamCommand readCommand() throws IOException {
+        // Make sure we fully read and verified the previous command
+        this.reader.ensureCommandFullyRead();
+
+        // Read command header
         BtrfsStreamCommandHeader header = this.readCommandHeader();
-        long commandStartPosition = this.reader.getPosition();
+        this.reader.setCommandVerification(header.getLength(), header.getCrc());
 
         // Read command body
         BtrfsStreamCommand command;
@@ -105,19 +109,6 @@ public class BtrfsStreamReader implements AutoCloseable {
             default:
                 throw new BtrfsStructureException(String.format("Command not yet implemented: %s", header.getCommand()));
         }
-
-        // Verify that the right number of bytes were read
-        long commandEndPosition = this.reader.getPosition();
-        int actualCommandLength = (int) (commandEndPosition - commandStartPosition);
-        if (actualCommandLength != header.getLength()) {
-            throw new BtrfsStructureException(String.format(
-                "Command length was %d but %d bytes were read",
-                header.getLength(),
-                actualCommandLength
-            ));
-        }
-
-        // TODO: CRC check
 
         return command;
     }
@@ -134,7 +125,9 @@ public class BtrfsStreamReader implements AutoCloseable {
         }
 
         // The CRC32 checksum of the header + body (w/ zeroes for the checksum value itself)
+        this.reader.setChecksumZeroBytes(true);
         long crc = this.reader.readLE32() & 0xFFFFFFFFL;
+        this.reader.setChecksumZeroBytes(false);
 
         return new BtrfsStreamCommandHeader(length, command, crc);
     }
