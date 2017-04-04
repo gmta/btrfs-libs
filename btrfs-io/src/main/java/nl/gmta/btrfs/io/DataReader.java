@@ -38,12 +38,6 @@ class DataReader implements AutoCloseable {
             | ((long) (longBytes[0] & 0xFF) << 56);
     }
 
-    byte readByte() throws IOException {
-        byte result = (byte) this.is.read();
-        ++this.position;
-        return result;
-    }
-
     byte[] readBytes(int length) throws IOException {
         byte[] buffer = new byte[length];
         int read = this.is.read(buffer);

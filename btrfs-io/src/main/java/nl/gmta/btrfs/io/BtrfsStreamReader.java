@@ -151,7 +151,7 @@ public class BtrfsStreamReader implements AutoCloseable {
         // Read and verify magic (and NUL trail)
         byte[] magicExpect = BtrfsStreamHeader.MAGIC.getBytes(StandardCharsets.US_ASCII);
         byte[] magicActual = this.reader.readBytes(magicExpect.length);
-        byte nulTrail = this.reader.readByte();
+        byte nulTrail = this.reader.readBytes(1)[0];
         if (!Arrays.equals(magicExpect, magicActual) || (nulTrail != 0)) {
             throw new BtrfsStructureException("No btrfs stream header magic found");
         }
