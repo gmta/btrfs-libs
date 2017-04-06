@@ -10,6 +10,7 @@ import java.util.UUID;
 import nl.gmta.btrfs.io.exception.BtrfsStructureException;
 import nl.gmta.btrfs.structure.stream.BtrfsAttributeType;
 import nl.gmta.btrfs.structure.stream.BtrfsCommandType;
+import nl.gmta.btrfs.structure.stream.BtrfsLinkCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSnapshotCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommandHeader;
@@ -104,6 +105,9 @@ public class BtrfsStreamReader implements AutoCloseable {
         // Read command body
         BtrfsStreamCommand command;
         switch (header.getCommand()) {
+            case LINK:
+                command = this.readLinkCommand(header);
+                break;
             case SNAPSHOT:
                 command = this.readSnapshotCommand(header);
                 break;
@@ -170,6 +174,13 @@ public class BtrfsStreamReader implements AutoCloseable {
 
         this.isHeaderRead = true;
         return new BtrfsStreamHeader(version);
+    }
+
+    private BtrfsLinkCommand readLinkCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        String link = (String) this.readAttribute(BtrfsAttributeType.PATH_LINK);
+
+        return new BtrfsLinkCommand(header, path, link);
     }
 
     private BtrfsSnapshotCommand readSnapshotCommand(BtrfsStreamCommandHeader header) throws IOException {
