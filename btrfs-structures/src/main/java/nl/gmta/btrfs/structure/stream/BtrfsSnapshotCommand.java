@@ -43,7 +43,7 @@ public class BtrfsSnapshotCommand extends BtrfsStreamCommand {
     @Override
     public String toString() {
         return String.format(
-            "%s{header=%s path=%s UUID=%s CTransID=%d cloneUUID=%s cloneCTransID=%d}",
+            "%s{header=%s path='%s' UUID=%s CTransID=%d cloneUUID=%s cloneCTransID=%d}",
             this.getClass().getSimpleName(),
             this.header,
             this.path,

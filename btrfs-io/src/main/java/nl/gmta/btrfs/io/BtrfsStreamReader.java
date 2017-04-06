@@ -16,6 +16,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsStreamCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsTimespec;
+import nl.gmta.btrfs.structure.stream.BtrfsTruncateCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsUTimesCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsWriteCommand;
 
@@ -105,6 +106,9 @@ public class BtrfsStreamReader implements AutoCloseable {
             case SNAPSHOT:
                 command = this.readSnapshotCommand(header);
                 break;
+            case TRUNCATE:
+                command = this.readTruncateCommand(header);
+                break;
             case UTIMES:
                 command = this.readUTimesCommand(header);
                 break;
@@ -172,6 +176,13 @@ public class BtrfsStreamReader implements AutoCloseable {
         long cloneCTransID = (Long) this.readAttribute(BtrfsAttributeType.CLONE_CTRANSID);
 
         return new BtrfsSnapshotCommand(header, path, UUID, CTransID, cloneUUID, cloneCTransID);
+    }
+
+    private BtrfsTruncateCommand readTruncateCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        long size = (Long) this.readAttribute(BtrfsAttributeType.SIZE);
+
+        return new BtrfsTruncateCommand(header, path, size);
     }
 
     private BtrfsUTimesCommand readUTimesCommand(BtrfsStreamCommandHeader header) throws IOException {

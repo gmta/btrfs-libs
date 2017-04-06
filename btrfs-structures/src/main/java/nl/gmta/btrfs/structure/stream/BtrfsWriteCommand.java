@@ -37,7 +37,7 @@ public class BtrfsWriteCommand extends BtrfsStreamCommand {
     @Override
     public String toString() {
         return String.format(
-            "%s{header=%s path=%s fileOffset=%d dataSize=%d data=[on-demand]}",
+            "%s{header=%s path='%s' fileOffset=%d dataSize=%d data=[on-demand]}",
             this.getClass().getSimpleName(),
             this.header,
             this.path,

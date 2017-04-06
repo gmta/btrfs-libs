@@ -36,7 +36,7 @@ public class BtrfsUTimesCommand extends BtrfsStreamCommand {
     @Override
     public String toString() {
         return String.format(
-            "%s{header=%s path=%s atime=%s ctime=%s mtime=%s}",
+            "%s{header=%s path='%s' atime=%s ctime=%s mtime=%s}",
             this.getClass().getSimpleName(),
             this.header,
             this.path,
