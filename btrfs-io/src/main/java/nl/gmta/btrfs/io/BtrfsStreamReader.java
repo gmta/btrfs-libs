@@ -10,12 +10,19 @@ import java.util.UUID;
 import nl.gmta.btrfs.io.exception.BtrfsStructureException;
 import nl.gmta.btrfs.structure.stream.BtrfsAttributeType;
 import nl.gmta.btrfs.structure.stream.BtrfsCommandType;
+import nl.gmta.btrfs.structure.stream.BtrfsInodeCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsLinkCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsMkDirCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsMkFifoCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsMkFileCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsMkNodCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsMkSockCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSnapshotCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamHeader;
+import nl.gmta.btrfs.structure.stream.BtrfsSymlinkCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsTimespec;
 import nl.gmta.btrfs.structure.stream.BtrfsTruncateCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsUTimesCommand;
@@ -102,32 +109,30 @@ public class BtrfsStreamReader implements AutoCloseable {
         BtrfsStreamCommandHeader header = this.readCommandHeader();
         this.reader.setCommandVerification(header.getLength(), header.getCrc());
 
-        // Read command body
-        BtrfsStreamCommand command;
+        // Construct command
         switch (header.getCommand()) {
             case LINK:
-                command = this.readLinkCommand(header);
-                break;
+                return this.readLinkCommand(header);
             case SNAPSHOT:
-                command = this.readSnapshotCommand(header);
-                break;
+                return this.readSnapshotCommand(header);
             case TRUNCATE:
-                command = this.readTruncateCommand(header);
-                break;
+                return this.readTruncateCommand(header);
             case UNLINK:
-                command = this.readUnlinkCommand(header);
-                break;
+                return this.readUnlinkCommand(header);
             case UTIMES:
-                command = this.readUTimesCommand(header);
-                break;
+                return this.readUTimesCommand(header);
             case WRITE:
-                command = this.readWriteCommand(header);
-                break;
+                return this.readWriteCommand(header);
+            case MKDIR:
+            case MKFIFO:
+            case MKFILE:
+            case MKNOD:
+            case MKSOCK:
+            case SYMLINK:
+                return this.readInodeCommand(header);
             default:
                 throw new BtrfsStructureException(String.format("Command not yet implemented: %s", header.getCommand()));
         }
-
-        return command;
     }
 
     private BtrfsStreamCommandHeader readCommandHeader() throws IOException {
@@ -174,6 +179,37 @@ public class BtrfsStreamReader implements AutoCloseable {
 
         this.isHeaderRead = true;
         return new BtrfsStreamHeader(version);
+    }
+
+    private BtrfsInodeCommand readInodeCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        long inode = (Long) this.readAttribute(BtrfsAttributeType.INO);
+
+        switch (header.getCommand()) {
+            case MKFILE:
+                return new BtrfsMkFileCommand(header, path, inode);
+            case MKDIR:
+                return new BtrfsMkDirCommand(header, path, inode);
+            case SYMLINK:
+                String link = (String) this.readAttribute(BtrfsAttributeType.PATH_LINK);
+                return new BtrfsSymlinkCommand(header, path, inode, link);
+            default:
+                // Do nothing, handled below
+        }
+
+        long rdev = (Long) this.readAttribute(BtrfsAttributeType.RDEV);
+        long mode = (Long) this.readAttribute(BtrfsAttributeType.MODE);
+
+        switch (header.getCommand()) {
+            case MKFIFO:
+                return new BtrfsMkFifoCommand(header, path, inode, rdev, mode);
+            case MKNOD:
+                return new BtrfsMkNodCommand(header, path, inode, rdev, mode);
+            case MKSOCK:
+                return new BtrfsMkSockCommand(header, path, inode, rdev, mode);
+            default:
+                throw new BtrfsStructureException(String.format("Invalid inode command: %s", header.getCommand()));
+        }
     }
 
     private BtrfsLinkCommand readLinkCommand(BtrfsStreamCommandHeader header) throws IOException {
