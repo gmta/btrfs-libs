@@ -17,6 +17,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsMkFifoCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkFileCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkNodCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkSockCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsRenameCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSnapshotCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommandHeader;
@@ -113,6 +114,8 @@ public class BtrfsStreamReader implements AutoCloseable {
         switch (header.getCommand()) {
             case LINK:
                 return this.readLinkCommand(header);
+            case RENAME:
+                return this.readRenameCommand(header);
             case SNAPSHOT:
                 return this.readSnapshotCommand(header);
             case TRUNCATE:
@@ -217,6 +220,13 @@ public class BtrfsStreamReader implements AutoCloseable {
         String link = (String) this.readAttribute(BtrfsAttributeType.PATH_LINK);
 
         return new BtrfsLinkCommand(header, path, link);
+    }
+
+    private BtrfsRenameCommand readRenameCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        String to = (String) this.readAttribute(BtrfsAttributeType.PATH_TO);
+
+        return new BtrfsRenameCommand(header, path, to);
     }
 
     private BtrfsSnapshotCommand readSnapshotCommand(BtrfsStreamCommandHeader header) throws IOException {
