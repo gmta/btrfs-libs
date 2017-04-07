@@ -12,6 +12,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsAttributeType;
 import nl.gmta.btrfs.structure.stream.BtrfsChmodCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsChownCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsCommandType;
+import nl.gmta.btrfs.structure.stream.BtrfsEndCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsInodeCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsLinkCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkDirCommand;
@@ -118,6 +119,8 @@ public class BtrfsStreamReader implements AutoCloseable {
                 return this.readChmodCommand(header);
             case CHOWN:
                 return this.readChownCommand(header);
+            case END:
+                return this.readEndCommand(header);
             case LINK:
                 return this.readLinkCommand(header);
             case RENAME:
@@ -203,6 +206,10 @@ public class BtrfsStreamReader implements AutoCloseable {
         long gid = (Long) this.readAttribute(BtrfsAttributeType.GID);
 
         return new BtrfsChownCommand(header, path, uid, gid);
+    }
+
+    private BtrfsEndCommand readEndCommand(BtrfsStreamCommandHeader header) throws IOException {
+        return new BtrfsEndCommand(header);
     }
 
     private BtrfsInodeCommand readInodeCommand(BtrfsStreamCommandHeader header) throws IOException {

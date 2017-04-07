@@ -1,10 +1,10 @@
 package nl.gmta.btrfs.structure.stream;
 
 public abstract class BtrfsDeviceCommand extends BtrfsInodeCommand {
-    private final long rdev;
-    private final long mode;
+    protected final long rdev;
+    protected final long mode;
 
-    public BtrfsDeviceCommand(BtrfsStreamCommandHeader header, String path, long inode, long rdev, long mode) {
+    BtrfsDeviceCommand(BtrfsStreamCommandHeader header, String path, long inode, long rdev, long mode) {
         super(header, path, inode);
 
         this.rdev = rdev;

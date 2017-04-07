@@ -15,6 +15,10 @@ public abstract class BtrfsStreamCommand extends BtrfsStreamElement {
 
     @Override
     public String toString() {
-        return String.format("%s{header=%s}", this.getClass().getSimpleName(), this.header);
+        return String.format(
+            "%s{header=%s}",
+            this.getClass().getSimpleName(),
+            this.header
+        );
     }
 }
