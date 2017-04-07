@@ -31,6 +31,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsTimespec;
 import nl.gmta.btrfs.structure.stream.BtrfsTruncateCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsUTimesCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsUnlinkCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsUpdateExtentCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsWriteCommand;
 
 public class BtrfsStreamReader implements AutoCloseable {
@@ -129,6 +130,8 @@ public class BtrfsStreamReader implements AutoCloseable {
                 return this.readSnapshotCommand(header);
             case TRUNCATE:
                 return this.readTruncateCommand(header);
+            case UPDATE_EXTENT:
+                return this.readUpdateExtentCommand(header);
             case UNLINK:
                 return this.readUnlinkCommand(header);
             case UTIMES:
@@ -272,6 +275,14 @@ public class BtrfsStreamReader implements AutoCloseable {
         long size = (Long) this.readAttribute(BtrfsAttributeType.SIZE);
 
         return new BtrfsTruncateCommand(header, path, size);
+    }
+
+    private BtrfsUpdateExtentCommand readUpdateExtentCommand(BtrfsStreamCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        long fileOffset = (Long) this.readAttribute(BtrfsAttributeType.FILE_OFFSET);
+        long size = (Long) this.readAttribute(BtrfsAttributeType.SIZE);
+
+        return new BtrfsUpdateExtentCommand(header, path, fileOffset, size);
     }
 
     private BtrfsUnlinkCommand readUnlinkCommand(BtrfsStreamCommandHeader header) throws IOException {
