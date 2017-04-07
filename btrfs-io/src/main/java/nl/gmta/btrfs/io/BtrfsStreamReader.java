@@ -101,7 +101,7 @@ public class BtrfsStreamReader implements AutoCloseable {
                 result = new UUID(mostSigUUID, leastSigUUID);
                 break;
             default:
-                throw new BtrfsStructureException(String.format("Unimplemented value type: %s", type.getType()));
+                throw new RuntimeException(String.format("Unimplemented value type: %s", type.getType()));
         }
         return result;
     }
@@ -146,7 +146,7 @@ public class BtrfsStreamReader implements AutoCloseable {
             case SYMLINK:
                 return this.readInodeCommand(header);
             default:
-                throw new BtrfsStructureException(String.format("Command not yet implemented: %s", header.getCommand()));
+                throw new RuntimeException(String.format("Unimplemented command: %s", header.getCommand()));
         }
     }
 
