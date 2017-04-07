@@ -3,7 +3,7 @@ package nl.gmta.btrfs.structure.stream;
 public class BtrfsUnlinkCommand extends BtrfsStreamCommand {
     private final String path;
 
-    public BtrfsUnlinkCommand(BtrfsStreamCommandHeader header, String path) {
+    public BtrfsUnlinkCommand(BtrfsCommandHeader header, String path) {
         super(header);
 
         this.path = path;

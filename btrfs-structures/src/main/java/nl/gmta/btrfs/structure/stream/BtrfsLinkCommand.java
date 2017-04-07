@@ -4,7 +4,7 @@ public class BtrfsLinkCommand extends BtrfsStreamCommand {
     private final String path;
     private final String link;
 
-    public BtrfsLinkCommand(BtrfsStreamCommandHeader header, String path, String link) {
+    public BtrfsLinkCommand(BtrfsCommandHeader header, String path, String link) {
         super(header);
 
         this.path = path;

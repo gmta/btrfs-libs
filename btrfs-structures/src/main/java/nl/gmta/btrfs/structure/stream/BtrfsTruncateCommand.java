@@ -4,7 +4,7 @@ public class BtrfsTruncateCommand extends BtrfsStreamCommand {
     private final String path;
     private final long size;
 
-    public BtrfsTruncateCommand(BtrfsStreamCommandHeader header, String path, long size) {
+    public BtrfsTruncateCommand(BtrfsCommandHeader header, String path, long size) {
         super(header);
 
         this.path = path;

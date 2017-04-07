@@ -3,7 +3,7 @@ package nl.gmta.btrfs.structure.stream;
 public class BtrfsSymlinkCommand extends BtrfsInodeCommand {
     private final String link;
 
-    public BtrfsSymlinkCommand(BtrfsStreamCommandHeader header, String path, long inode, String link) {
+    public BtrfsSymlinkCommand(BtrfsCommandHeader header, String path, long inode, String link) {
         super(header, path, inode);
 
         this.link = link;

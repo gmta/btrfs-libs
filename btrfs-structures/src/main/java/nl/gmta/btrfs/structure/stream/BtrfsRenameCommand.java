@@ -4,7 +4,7 @@ public class BtrfsRenameCommand extends BtrfsStreamCommand {
     private final String path;
     private final String to;
 
-    public BtrfsRenameCommand(BtrfsStreamCommandHeader header, String path, String to) {
+    public BtrfsRenameCommand(BtrfsCommandHeader header, String path, String to) {
         super(header);
 
         this.path = path;

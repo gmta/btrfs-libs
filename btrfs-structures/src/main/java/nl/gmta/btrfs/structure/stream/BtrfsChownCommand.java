@@ -5,7 +5,7 @@ public class BtrfsChownCommand extends BtrfsStreamCommand {
     private final long uid;
     private final long gid;
 
-    public BtrfsChownCommand(BtrfsStreamCommandHeader header, String path, long uid, long gid) {
+    public BtrfsChownCommand(BtrfsCommandHeader header, String path, long uid, long gid) {
         super(header);
 
         this.path = path;

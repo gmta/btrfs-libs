@@ -8,7 +8,7 @@ public class BtrfsUTimesCommand extends BtrfsStreamCommand {
     private final BtrfsTimespec mtime;
     private final BtrfsTimespec ctime;
 
-    public BtrfsUTimesCommand(BtrfsStreamCommandHeader header, String path, BtrfsTimespec atime, BtrfsTimespec mtime, BtrfsTimespec ctime) {
+    public BtrfsUTimesCommand(BtrfsCommandHeader header, String path, BtrfsTimespec atime, BtrfsTimespec mtime, BtrfsTimespec ctime) {
         super(header);
 
         this.path = Objects.requireNonNull(path);

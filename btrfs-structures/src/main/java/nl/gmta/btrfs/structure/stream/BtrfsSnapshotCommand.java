@@ -10,7 +10,7 @@ public class BtrfsSnapshotCommand extends BtrfsStreamCommand {
     private final UUID cloneUUID;
     private final long cloneCTransID;
 
-    public BtrfsSnapshotCommand(BtrfsStreamCommandHeader header, String path, UUID UUID, long CTransID, UUID cloneUUID, long cloneCTransID) {
+    public BtrfsSnapshotCommand(BtrfsCommandHeader header, String path, UUID UUID, long CTransID, UUID cloneUUID, long cloneCTransID) {
         super(header);
 
         this.path = Objects.requireNonNull(path);

@@ -15,6 +15,10 @@ public class BtrfsStreamHeader extends BtrfsStreamElement {
 
     @Override
     public String toString() {
-        return String.format("%s{version=%d}", this.getClass().getSimpleName(), this.version);
+        return String.format(
+            "%s{version=%d}",
+            this.getClass().getSimpleName(),
+            this.version
+        );
     }
 }

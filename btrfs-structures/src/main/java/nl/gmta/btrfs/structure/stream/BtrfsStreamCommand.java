@@ -3,13 +3,13 @@ package nl.gmta.btrfs.structure.stream;
 import java.util.Objects;
 
 public abstract class BtrfsStreamCommand extends BtrfsStreamElement {
-    protected final BtrfsStreamCommandHeader header;
+    protected final BtrfsCommandHeader header;
 
-    BtrfsStreamCommand(BtrfsStreamCommandHeader header) {
+    BtrfsStreamCommand(BtrfsCommandHeader header) {
         this.header = Objects.requireNonNull(header);
     }
 
-    public BtrfsStreamCommandHeader getHeader() {
+    public BtrfsCommandHeader getHeader() {
         return this.header;
     }
 

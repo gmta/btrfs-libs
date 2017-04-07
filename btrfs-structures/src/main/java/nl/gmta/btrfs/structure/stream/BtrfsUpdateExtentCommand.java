@@ -5,7 +5,7 @@ public class BtrfsUpdateExtentCommand extends BtrfsStreamCommand {
     private final long fileOffset;
     private final long size;
 
-    public BtrfsUpdateExtentCommand(BtrfsStreamCommandHeader header, String path, long fileOffset, long size) {
+    public BtrfsUpdateExtentCommand(BtrfsCommandHeader header, String path, long fileOffset, long size) {
         super(header);
 
         this.path = path;

@@ -4,7 +4,7 @@ public abstract class BtrfsInodeCommand extends BtrfsStreamCommand {
     protected final String path;
     protected final long inode;
 
-    public BtrfsInodeCommand(BtrfsStreamCommandHeader header, String path, long inode) {
+    public BtrfsInodeCommand(BtrfsCommandHeader header, String path, long inode) {
         super(header);
 
         this.path = path;

@@ -23,7 +23,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsMkSockCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsRenameCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSnapshotCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommand;
-import nl.gmta.btrfs.structure.stream.BtrfsStreamCommandHeader;
+import nl.gmta.btrfs.structure.stream.BtrfsCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsSymlinkCommand;
@@ -111,7 +111,7 @@ public class BtrfsStreamReader implements AutoCloseable {
         this.reader.ensureCommandFullyRead();
 
         // Read command header
-        BtrfsStreamCommandHeader header = this.readCommandHeader();
+        BtrfsCommandHeader header = this.readCommandHeader();
         this.reader.setCommandVerification(header.getLength(), header.getCrc());
 
         // Construct command
@@ -150,7 +150,7 @@ public class BtrfsStreamReader implements AutoCloseable {
         }
     }
 
-    private BtrfsStreamCommandHeader readCommandHeader() throws IOException {
+    private BtrfsCommandHeader readCommandHeader() throws IOException {
         // Total length of command body after the header
         int length = this.reader.readLE32();
 
@@ -166,7 +166,7 @@ public class BtrfsStreamReader implements AutoCloseable {
         long crc = this.reader.readLE32() & 0xFFFFFFFFL;
         this.reader.setChecksumZeroBytes(false);
 
-        return new BtrfsStreamCommandHeader(length, command, crc);
+        return new BtrfsCommandHeader(length, command, crc);
     }
 
     private BtrfsStreamElement readElement() throws IOException {
@@ -196,14 +196,14 @@ public class BtrfsStreamReader implements AutoCloseable {
         return new BtrfsStreamHeader(version);
     }
 
-    private BtrfsChmodCommand readChmodCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsChmodCommand readChmodCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         long mode = (Long) this.readAttribute(BtrfsAttributeType.MODE);
 
         return new BtrfsChmodCommand(header, path, mode);
     }
 
-    private BtrfsChownCommand readChownCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsChownCommand readChownCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         long uid = (Long) this.readAttribute(BtrfsAttributeType.UID);
         long gid = (Long) this.readAttribute(BtrfsAttributeType.GID);
@@ -211,11 +211,11 @@ public class BtrfsStreamReader implements AutoCloseable {
         return new BtrfsChownCommand(header, path, uid, gid);
     }
 
-    private BtrfsEndCommand readEndCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsEndCommand readEndCommand(BtrfsCommandHeader header) throws IOException {
         return new BtrfsEndCommand(header);
     }
 
-    private BtrfsInodeCommand readInodeCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsInodeCommand readInodeCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         long inode = (Long) this.readAttribute(BtrfsAttributeType.INO);
 
@@ -246,21 +246,21 @@ public class BtrfsStreamReader implements AutoCloseable {
         }
     }
 
-    private BtrfsLinkCommand readLinkCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsLinkCommand readLinkCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         String link = (String) this.readAttribute(BtrfsAttributeType.PATH_LINK);
 
         return new BtrfsLinkCommand(header, path, link);
     }
 
-    private BtrfsRenameCommand readRenameCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsRenameCommand readRenameCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         String to = (String) this.readAttribute(BtrfsAttributeType.PATH_TO);
 
         return new BtrfsRenameCommand(header, path, to);
     }
 
-    private BtrfsSnapshotCommand readSnapshotCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsSnapshotCommand readSnapshotCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         UUID UUID = (UUID) this.readAttribute(BtrfsAttributeType.UUID);
         long CTransID = (Long) this.readAttribute(BtrfsAttributeType.CTRANSID);
@@ -270,14 +270,14 @@ public class BtrfsStreamReader implements AutoCloseable {
         return new BtrfsSnapshotCommand(header, path, UUID, CTransID, cloneUUID, cloneCTransID);
     }
 
-    private BtrfsTruncateCommand readTruncateCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsTruncateCommand readTruncateCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         long size = (Long) this.readAttribute(BtrfsAttributeType.SIZE);
 
         return new BtrfsTruncateCommand(header, path, size);
     }
 
-    private BtrfsUpdateExtentCommand readUpdateExtentCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsUpdateExtentCommand readUpdateExtentCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         long fileOffset = (Long) this.readAttribute(BtrfsAttributeType.FILE_OFFSET);
         long size = (Long) this.readAttribute(BtrfsAttributeType.SIZE);
@@ -285,13 +285,13 @@ public class BtrfsStreamReader implements AutoCloseable {
         return new BtrfsUpdateExtentCommand(header, path, fileOffset, size);
     }
 
-    private BtrfsUnlinkCommand readUnlinkCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsUnlinkCommand readUnlinkCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
 
         return new BtrfsUnlinkCommand(header, path);
     }
 
-    private BtrfsUTimesCommand readUTimesCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsUTimesCommand readUTimesCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         BtrfsTimespec atime = (BtrfsTimespec) this.readAttribute(BtrfsAttributeType.ATIME);
         BtrfsTimespec mtime = (BtrfsTimespec) this.readAttribute(BtrfsAttributeType.MTIME);
@@ -301,7 +301,7 @@ public class BtrfsStreamReader implements AutoCloseable {
     }
 
     @SuppressWarnings("resource")
-    private BtrfsWriteCommand readWriteCommand(BtrfsStreamCommandHeader header) throws IOException {
+    private BtrfsWriteCommand readWriteCommand(BtrfsCommandHeader header) throws IOException {
         long fieldsStartPosition = this.reader.getPosition();
 
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);

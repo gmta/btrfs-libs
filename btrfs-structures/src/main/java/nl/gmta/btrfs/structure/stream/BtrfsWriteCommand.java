@@ -9,7 +9,7 @@ public class BtrfsWriteCommand extends BtrfsStreamCommand {
     private final int dataSize;
     private final ReadableByteChannel data;
 
-    public BtrfsWriteCommand(BtrfsStreamCommandHeader header, String path, long fileOffset, int dataSize, ReadableByteChannel data) {
+    public BtrfsWriteCommand(BtrfsCommandHeader header, String path, long fileOffset, int dataSize, ReadableByteChannel data) {
         super(header);
 
         this.path = Objects.requireNonNull(path);

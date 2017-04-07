@@ -4,7 +4,7 @@ public abstract class BtrfsDeviceCommand extends BtrfsInodeCommand {
     protected final long rdev;
     protected final long mode;
 
-    BtrfsDeviceCommand(BtrfsStreamCommandHeader header, String path, long inode, long rdev, long mode) {
+    BtrfsDeviceCommand(BtrfsCommandHeader header, String path, long inode, long rdev, long mode) {
         super(header, path, inode);
 
         this.rdev = rdev;

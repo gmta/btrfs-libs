@@ -4,7 +4,7 @@ public class BtrfsChmodCommand extends BtrfsStreamCommand {
     private final String path;
     private final long mode;
 
-    public BtrfsChmodCommand(BtrfsStreamCommandHeader header, String path, long mode) {
+    public BtrfsChmodCommand(BtrfsCommandHeader header, String path, long mode) {
         super(header);
 
         this.path = path;
