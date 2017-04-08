@@ -8,6 +8,8 @@
 	</parent>
 
 	<artifactId>btrfs-structures</artifactId>
+    <packaging>jar</packaging>
+
 	<name>Btrfs structures</name>
-	<packaging>jar</packaging>
+	<description>Btrfs data structures</description>
 </project>

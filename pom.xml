@@ -1,20 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>nl.gmta.btrfs</groupId>
 
+	<groupId>nl.gmta.btrfs</groupId>
 	<artifactId>btrfs-libs</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Btrfs library</name>
 	<packaging>pom</packaging>
 	
-	<properties>
-	   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
+    <name>Btrfs library</name>
+    <description>Java structures and libraries for interacting with the btrfs filesystem</description>
+    <url>https://github.com/GMTA/btrfs-libs</url>
+    
     <modules>
         <module>btrfs-io</module>
         <module>btrfs-structures</module>
     </modules>
+
+    <developers>
+        <developer>
+            <email>jelle@gmta.nl</email>
+            <name>Jelle Raaijmakers</name>
+            <url>https://github.com/GMTA</url>
+            <id>jelle.raaijmakers</id>
+        </developer>
+    </developers>
+
+	<properties>
+	   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<build>
 	   <plugins>
