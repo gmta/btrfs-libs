@@ -18,9 +18,8 @@ Collection of Java structures and libraries for interacting with the btrfs files
 
 ```java
 Path streamFile = Paths.get("/path/to/stream.dat");
-try (InputStream is = Files.newInputStream(streamFile);
-        BufferedInputStream bis = new BufferedInputStream(is);
-        BtrfsStreamReader reader = new BtrfsStreamReader(bis)) {
+try (InputStream is = new BufferedInputStream(Files.newInputStream(streamFile));
+        BtrfsStreamReader reader = new BtrfsStreamReader(is)) {
 
     while (reader.hasNext()) {
         BtrfsStreamElement element = reader.next();
