@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsCommandHeader {
     private final int length;
     private final BtrfsCommandType command;
@@ -7,7 +9,7 @@ public class BtrfsCommandHeader {
 
     public BtrfsCommandHeader(int length, BtrfsCommandType command, int crc) {
         this.length = length;
-        this.command = command;
+        this.command = Objects.requireNonNull(command);
         this.crc = crc;
     }
 

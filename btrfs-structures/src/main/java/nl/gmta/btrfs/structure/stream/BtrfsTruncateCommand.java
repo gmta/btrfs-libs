@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsTruncateCommand extends BtrfsStreamCommand {
     private final String path;
     private final long size;
@@ -7,7 +9,7 @@ public class BtrfsTruncateCommand extends BtrfsStreamCommand {
     public BtrfsTruncateCommand(BtrfsCommandHeader header, String path, long size) {
         super(header);
 
-        this.path = path;
+        this.path = Objects.requireNonNull(path);
         this.size = size;
     }
 

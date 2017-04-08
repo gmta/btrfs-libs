@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public abstract class BtrfsInodeCommand extends BtrfsStreamCommand {
     protected final String path;
     protected final long inode;
@@ -7,7 +9,7 @@ public abstract class BtrfsInodeCommand extends BtrfsStreamCommand {
     public BtrfsInodeCommand(BtrfsCommandHeader header, String path, long inode) {
         super(header);
 
-        this.path = path;
+        this.path = Objects.requireNonNull(path);
         this.inode = inode;
     }
 

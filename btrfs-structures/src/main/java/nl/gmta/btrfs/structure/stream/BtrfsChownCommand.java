@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsChownCommand extends BtrfsStreamCommand {
     private final String path;
     private final long uid;
@@ -8,7 +10,7 @@ public class BtrfsChownCommand extends BtrfsStreamCommand {
     public BtrfsChownCommand(BtrfsCommandHeader header, String path, long uid, long gid) {
         super(header);
 
-        this.path = path;
+        this.path = Objects.requireNonNull(path);
         this.uid = uid;
         this.gid = gid;
     }

@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsRenameCommand extends BtrfsStreamCommand {
     private final String path;
     private final String to;
@@ -7,8 +9,8 @@ public class BtrfsRenameCommand extends BtrfsStreamCommand {
     public BtrfsRenameCommand(BtrfsCommandHeader header, String path, String to) {
         super(header);
 
-        this.path = path;
-        this.to = to;
+        this.path = Objects.requireNonNull(path);
+        this.to = Objects.requireNonNull(to);
     }
 
     public String getPath() {

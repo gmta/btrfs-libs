@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsLinkCommand extends BtrfsStreamCommand {
     private final String path;
     private final String link;
@@ -7,8 +9,8 @@ public class BtrfsLinkCommand extends BtrfsStreamCommand {
     public BtrfsLinkCommand(BtrfsCommandHeader header, String path, String link) {
         super(header);
 
-        this.path = path;
-        this.link = link;
+        this.path = Objects.requireNonNull(path);
+        this.link = Objects.requireNonNull(link);
     }
 
     public String getPath() {

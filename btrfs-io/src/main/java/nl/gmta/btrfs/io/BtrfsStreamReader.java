@@ -2,7 +2,6 @@ package nl.gmta.btrfs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsMkFileCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkNodCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkSockCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsRenameCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsSetXAttrCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSnapshotCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
@@ -115,10 +115,8 @@ public class BtrfsStreamReader implements AutoCloseable {
     }
 
     private BtrfsStreamCommand readCommand() throws IOException {
-        // Make sure we fully read and verified the previous command
-        this.reader.ensureCommandFullyRead();
-
         // Read command header
+        this.reader.resetChecksum();
         BtrfsCommandHeader header = this.readCommandHeader();
         this.reader.setCommandVerification(header.getLength(), header.getCrc());
 
@@ -134,6 +132,8 @@ public class BtrfsStreamReader implements AutoCloseable {
                 return this.readLinkCommand(header);
             case RENAME:
                 return this.readRenameCommand(header);
+            case SET_XATTR:
+                return this.readSetXAttrCommand(header);
             case SNAPSHOT:
                 return this.readSnapshotCommand(header);
             case SUBVOL:
@@ -270,6 +270,14 @@ public class BtrfsStreamReader implements AutoCloseable {
         return new BtrfsRenameCommand(header, path, to);
     }
 
+    private BtrfsSetXAttrCommand readSetXAttrCommand(BtrfsCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        String name = (String) this.readAttribute(BtrfsAttributeType.XATTR_NAME);
+        byte[] data = (byte[]) this.readAttribute(BtrfsAttributeType.XATTR_DATA);
+
+        return new BtrfsSetXAttrCommand(header, path, name, data);
+    }
+
     private BtrfsSnapshotCommand readSnapshotCommand(BtrfsCommandHeader header) throws IOException {
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         UUID UUID = (UUID) this.readAttribute(BtrfsAttributeType.UUID);
@@ -318,19 +326,11 @@ public class BtrfsStreamReader implements AutoCloseable {
         return new BtrfsUTimesCommand(header, path, atime, mtime, ctime);
     }
 
-    @SuppressWarnings("resource")
     private BtrfsWriteCommand readWriteCommand(BtrfsCommandHeader header) throws IOException {
-        long fieldsStartPosition = this.reader.getPosition();
-
         String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
         long fileOffset = (Long) this.readAttribute(BtrfsAttributeType.FILE_OFFSET);
+        byte[] data = (byte[]) this.readAttribute(BtrfsAttributeType.DATA);
 
-        long fieldsEndPosition = this.reader.getPosition();
-        int fieldsSize = (int) (fieldsEndPosition - fieldsStartPosition);
-        int dataSize = header.getLength() - fieldsSize;
-
-        ReadableByteChannel data = new SizedBinaryReader(this.reader, dataSize);
-
-        return new BtrfsWriteCommand(header, path, fileOffset, dataSize, data);
+        return new BtrfsWriteCommand(header, path, fileOffset, data);
     }
 }

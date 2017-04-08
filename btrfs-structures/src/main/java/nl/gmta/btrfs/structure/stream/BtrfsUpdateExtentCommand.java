@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsUpdateExtentCommand extends BtrfsStreamCommand {
     private final String path;
     private final long fileOffset;
@@ -8,7 +10,7 @@ public class BtrfsUpdateExtentCommand extends BtrfsStreamCommand {
     public BtrfsUpdateExtentCommand(BtrfsCommandHeader header, String path, long fileOffset, long size) {
         super(header);
 
-        this.path = path;
+        this.path = Objects.requireNonNull(path);
         this.fileOffset = fileOffset;
         this.size = size;
     }

@@ -12,8 +12,6 @@ import nl.gmta.linux.crypto.CRC32C;
  * loading of command bodies and verifies both command length and data CRC.
  */
 class VerifyingDataReader extends DataReader {
-    private static final int SKIP_BUFFER_MAX_SIZE = 8192;
-
     private final Checksum checksum = new CRC32C();
     private boolean checksumZeroBytes = false;
     private long commandEndPosition;
@@ -21,22 +19,6 @@ class VerifyingDataReader extends DataReader {
 
     VerifyingDataReader(InputStream is) {
         super(is);
-    }
-
-    /**
-     * Makes sure we've moved to the command's ending position so we can read the next command.
-     */
-    void ensureCommandFullyRead() throws IOException {
-        // Read all data
-        if (this.commandEndPosition > 0) {
-            while (this.position < this.commandEndPosition) {
-                int bufferSize = (int) Math.min(this.commandEndPosition - this.position, SKIP_BUFFER_MAX_SIZE);
-                this.readBytes(bufferSize);
-            }
-        }
-
-        // Reset checksum since we've finished reading a command
-        this.checksum.reset();
     }
 
     @Override
@@ -71,6 +53,10 @@ class VerifyingDataReader extends DataReader {
         }
 
         return data;
+    }
+
+    public void resetChecksum() {
+        this.checksum.reset();
     }
 
     /**

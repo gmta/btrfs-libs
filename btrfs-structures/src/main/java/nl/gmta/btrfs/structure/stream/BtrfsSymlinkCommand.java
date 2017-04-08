@@ -1,12 +1,14 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsSymlinkCommand extends BtrfsInodeCommand {
     private final String link;
 
     public BtrfsSymlinkCommand(BtrfsCommandHeader header, String path, long inode, String link) {
         super(header, path, inode);
 
-        this.link = link;
+        this.link = Objects.requireNonNull(link);
     }
 
     public String getLink() {

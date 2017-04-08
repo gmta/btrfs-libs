@@ -2,16 +2,16 @@ package nl.gmta.btrfs.structure.stream;
 
 import java.util.Objects;
 
-public class BtrfsWriteCommand extends BtrfsStreamCommand {
+public class BtrfsSetXAttrCommand extends BtrfsStreamCommand {
     private final String path;
-    private final long fileOffset;
+    private final String name;
     private final byte[] data;
 
-    public BtrfsWriteCommand(BtrfsCommandHeader header, String path, long fileOffset, byte[] data) {
+    public BtrfsSetXAttrCommand(BtrfsCommandHeader header, String path, String name, byte[] data) {
         super(header);
 
         this.path = Objects.requireNonNull(path);
-        this.fileOffset = fileOffset;
+        this.name = Objects.requireNonNull(name);
         this.data = Objects.requireNonNull(data);
     }
 
@@ -19,8 +19,8 @@ public class BtrfsWriteCommand extends BtrfsStreamCommand {
         return this.path;
     }
 
-    public long getFileOffset() {
-        return this.fileOffset;
+    public String getName() {
+        return this.name;
     }
 
     public byte[] getData() {
@@ -30,11 +30,11 @@ public class BtrfsWriteCommand extends BtrfsStreamCommand {
     @Override
     public String toString() {
         return String.format(
-            "%s{header=%s path='%s' fileOffset=%d data=[%d bytes]}",
+            "%s{header=%s path='%s' name='%s' data=[%d bytes]}",
             this.getClass().getSimpleName(),
             this.header,
             this.path,
-            this.fileOffset,
+            this.name,
             this.data.length
         );
     }

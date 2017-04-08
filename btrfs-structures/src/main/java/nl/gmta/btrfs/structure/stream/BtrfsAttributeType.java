@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 import nl.gmta.btrfs.structure.shared.IdentifiableEnum;
 import nl.gmta.btrfs.structure.shared.IdentifiableEnumMap;
 
@@ -36,7 +38,7 @@ public enum BtrfsAttributeType implements IdentifiableEnum<Integer> {
 
     BtrfsAttributeType(int id, BtrfsValueType type) {
         this.id = id;
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
     }
 
     public static BtrfsAttributeType getById(Integer id) {

@@ -22,10 +22,6 @@ class DataReader implements AutoCloseable {
         this.is.close();
     }
 
-    long getPosition() {
-        return this.position;
-    }
-
     long readBE64() throws IOException {
         byte[] longBytes = this.readBytes(8);
         return (longBytes[7] & 0xFF)

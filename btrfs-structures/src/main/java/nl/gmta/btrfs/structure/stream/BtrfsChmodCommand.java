@@ -1,5 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
+
 public class BtrfsChmodCommand extends BtrfsStreamCommand {
     private final String path;
     private final long mode;
@@ -7,7 +9,7 @@ public class BtrfsChmodCommand extends BtrfsStreamCommand {
     public BtrfsChmodCommand(BtrfsCommandHeader header, String path, long mode) {
         super(header);
 
-        this.path = path;
+        this.path = Objects.requireNonNull(path);
         this.mode = mode;
     }
 

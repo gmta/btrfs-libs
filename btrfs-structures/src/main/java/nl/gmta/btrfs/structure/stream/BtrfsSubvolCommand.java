@@ -1,5 +1,6 @@
 package nl.gmta.btrfs.structure.stream;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class BtrfsSubvolCommand extends BtrfsStreamCommand {
@@ -10,8 +11,8 @@ public class BtrfsSubvolCommand extends BtrfsStreamCommand {
     public BtrfsSubvolCommand(BtrfsCommandHeader header, String path, UUID UUID, long CTransID) {
         super(header);
 
-        this.path = path;
-        this.UUID = UUID;
+        this.path = Objects.requireNonNull(path);
+        this.UUID = Objects.requireNonNull(UUID);
         this.CTransID = CTransID;
     }
 
