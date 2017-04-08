@@ -11,6 +11,7 @@ import nl.gmta.btrfs.io.exception.BtrfsStructureException;
 import nl.gmta.btrfs.structure.stream.BtrfsAttributeType;
 import nl.gmta.btrfs.structure.stream.BtrfsChmodCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsChownCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsCommandType;
 import nl.gmta.btrfs.structure.stream.BtrfsEndCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsInodeCommand;
@@ -23,9 +24,9 @@ import nl.gmta.btrfs.structure.stream.BtrfsMkSockCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsRenameCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSnapshotCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamCommand;
-import nl.gmta.btrfs.structure.stream.BtrfsCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamElement;
 import nl.gmta.btrfs.structure.stream.BtrfsStreamHeader;
+import nl.gmta.btrfs.structure.stream.BtrfsSubvolCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSymlinkCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsTimespec;
 import nl.gmta.btrfs.structure.stream.BtrfsTruncateCommand;
@@ -64,7 +65,7 @@ public class BtrfsStreamReader implements AutoCloseable {
         // Read and verify attribute type
         int readType = this.reader.readLE16();
         if (readType != type.getId()) {
-            throw new BtrfsStructureException(String.format("Expected attribute type %04X but got %04X", type.getId(), readType));
+            throw new BtrfsStructureException(String.format("Expected attribute type %04x but got %04x", type.getId(), readType));
         }
 
         // Read attribute value
@@ -128,6 +129,8 @@ public class BtrfsStreamReader implements AutoCloseable {
                 return this.readRenameCommand(header);
             case SNAPSHOT:
                 return this.readSnapshotCommand(header);
+            case SUBVOL:
+                return this.readSubvolCommand(header);
             case TRUNCATE:
                 return this.readTruncateCommand(header);
             case UPDATE_EXTENT:
@@ -268,6 +271,14 @@ public class BtrfsStreamReader implements AutoCloseable {
         long cloneCTransID = (Long) this.readAttribute(BtrfsAttributeType.CLONE_CTRANSID);
 
         return new BtrfsSnapshotCommand(header, path, UUID, CTransID, cloneUUID, cloneCTransID);
+    }
+
+    private BtrfsSubvolCommand readSubvolCommand(BtrfsCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        UUID UUID = (UUID) this.readAttribute(BtrfsAttributeType.UUID);
+        long CTransID = (Long) this.readAttribute(BtrfsAttributeType.CTRANSID);
+
+        return new BtrfsSubvolCommand(header, path, UUID, CTransID);
     }
 
     private BtrfsTruncateCommand readTruncateCommand(BtrfsCommandHeader header) throws IOException {

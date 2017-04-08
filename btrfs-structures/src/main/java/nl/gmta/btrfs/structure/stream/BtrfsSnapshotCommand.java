@@ -3,33 +3,15 @@ package nl.gmta.btrfs.structure.stream;
 import java.util.Objects;
 import java.util.UUID;
 
-public class BtrfsSnapshotCommand extends BtrfsStreamCommand {
-    private final String path;
-    private final UUID UUID;
-    private final long CTransID;
+public class BtrfsSnapshotCommand extends BtrfsSubvolCommand {
     private final UUID cloneUUID;
     private final long cloneCTransID;
 
     public BtrfsSnapshotCommand(BtrfsCommandHeader header, String path, UUID UUID, long CTransID, UUID cloneUUID, long cloneCTransID) {
-        super(header);
+        super(header, path, UUID, CTransID);
 
-        this.path = Objects.requireNonNull(path);
-        this.UUID = Objects.requireNonNull(UUID);
-        this.CTransID = CTransID;
         this.cloneUUID = Objects.requireNonNull(cloneUUID);
         this.cloneCTransID = cloneCTransID;
-    }
-
-    public String getPath() {
-        return this.path;
-    }
-
-    public UUID getUUID() {
-        return this.UUID;
-    }
-
-    public long getCTransID() {
-        return this.CTransID;
     }
 
     public UUID getCloneUUID() {
