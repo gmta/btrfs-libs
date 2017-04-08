@@ -11,6 +11,7 @@ import nl.gmta.btrfs.io.exception.BtrfsStructureException;
 import nl.gmta.btrfs.structure.stream.BtrfsAttributeType;
 import nl.gmta.btrfs.structure.stream.BtrfsChmodCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsChownCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsCloneCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsCommandHeader;
 import nl.gmta.btrfs.structure.stream.BtrfsCommandType;
 import nl.gmta.btrfs.structure.stream.BtrfsEndCommand;
@@ -128,6 +129,8 @@ public class BtrfsStreamReader implements AutoCloseable {
                 return this.readChmodCommand(header);
             case CHOWN:
                 return this.readChownCommand(header);
+            case CLONE:
+                return this.readCloneCommand(header);
             case END:
                 return this.readEndCommand(header);
             case LINK:
@@ -225,6 +228,18 @@ public class BtrfsStreamReader implements AutoCloseable {
         long gid = (Long) this.readAttribute(BtrfsAttributeType.GID);
 
         return new BtrfsChownCommand(header, path, uid, gid);
+    }
+
+    private BtrfsCloneCommand readCloneCommand(BtrfsCommandHeader header) throws IOException {
+        long fileOffset = (Long) this.readAttribute(BtrfsAttributeType.FILE_OFFSET);
+        long cloneSize = (Long) this.readAttribute(BtrfsAttributeType.CLONE_LEN);
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        UUID cloneUUID = (UUID) this.readAttribute(BtrfsAttributeType.CLONE_UUID);
+        long cloneCTransID = (Long) this.readAttribute(BtrfsAttributeType.CLONE_CTRANSID);
+        String clonePath = (String) this.readAttribute(BtrfsAttributeType.CLONE_PATH);
+        long cloneOffset = (Long) this.readAttribute(BtrfsAttributeType.CLONE_OFFSET);
+
+        return new BtrfsCloneCommand(header, fileOffset, cloneSize, path, cloneUUID, cloneCTransID, clonePath, cloneOffset);
     }
 
     private BtrfsEndCommand readEndCommand(BtrfsCommandHeader header) throws IOException {
