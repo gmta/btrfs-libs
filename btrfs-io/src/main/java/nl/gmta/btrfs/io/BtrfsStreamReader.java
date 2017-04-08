@@ -3,6 +3,7 @@ package nl.gmta.btrfs.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
@@ -41,11 +42,17 @@ public class BtrfsStreamReader implements AutoCloseable {
     private static final int VALUE_TYPE_UUID_SIZE = 16;
     private static final int SUPPORTED_VERSION = 1;
 
+    private final Charset charset;
     private final VerifyingDataReader reader;
     private boolean isHeaderRead = false;
 
     public BtrfsStreamReader(InputStream is) {
+        this(is, StandardCharsets.UTF_8);
+    }
+
+    public BtrfsStreamReader(InputStream is, Charset charset) {
         this.reader = new VerifyingDataReader(is);
+        this.charset = charset;
     }
 
     @Override
@@ -77,7 +84,7 @@ public class BtrfsStreamReader implements AutoCloseable {
                 break;
             case STRING:
                 byte[] stringData = this.reader.readBytes(length);
-                result = new String(stringData, StandardCharsets.US_ASCII);
+                result = new String(stringData, this.charset);
                 break;
             case TIMESPEC:
                 if (length != VALUE_TYPE_TIMESPEC_SIZE) {
