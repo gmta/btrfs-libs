@@ -21,6 +21,7 @@ import nl.gmta.btrfs.structure.stream.BtrfsMkFifoCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkFileCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkNodCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsMkSockCommand;
+import nl.gmta.btrfs.structure.stream.BtrfsRemoveXAttrCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsRenameCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsRmDirCommand;
 import nl.gmta.btrfs.structure.stream.BtrfsSetXAttrCommand;
@@ -131,6 +132,8 @@ public class BtrfsStreamReader implements AutoCloseable {
                 return this.readEndCommand(header);
             case LINK:
                 return this.readLinkCommand(header);
+            case REMOVE_XATTR:
+                return this.readRemoveXAttrCommand(header);
             case RENAME:
                 return this.readRenameCommand(header);
             case RMDIR:
@@ -264,6 +267,13 @@ public class BtrfsStreamReader implements AutoCloseable {
         String link = (String) this.readAttribute(BtrfsAttributeType.PATH_LINK);
 
         return new BtrfsLinkCommand(header, path, link);
+    }
+
+    private BtrfsRemoveXAttrCommand readRemoveXAttrCommand(BtrfsCommandHeader header) throws IOException {
+        String path = (String) this.readAttribute(BtrfsAttributeType.PATH);
+        String name = (String) this.readAttribute(BtrfsAttributeType.XATTR_NAME);
+
+        return new BtrfsRemoveXAttrCommand(header, path, name);
     }
 
     private BtrfsRenameCommand readRenameCommand(BtrfsCommandHeader header) throws IOException {
