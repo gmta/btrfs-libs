@@ -17,7 +17,7 @@ class VerifyingDataReader extends DataReader {
     private final Checksum checksum = new CRC32C();
     private boolean checksumZeroBytes = false;
     private long commandEndPosition;
-    private long expectedChecksum;
+    private int expectedChecksum;
 
     VerifyingDataReader(InputStream is) {
         super(is);
@@ -57,7 +57,7 @@ class VerifyingDataReader extends DataReader {
 
         // If we've reached the command's end position, verify the checksum
         if (verify && (this.position >= this.commandEndPosition)) {
-            long checksumValue = this.checksum.getValue();
+            int checksumValue = (int) this.checksum.getValue();
             if (checksumValue != this.expectedChecksum) {
                 throw new BtrfsStructureException(String.format(
                     "Command body checksum mismatch: expected %08x but got %08x",
@@ -89,7 +89,7 @@ class VerifyingDataReader extends DataReader {
      * @param size The size of the command's body in bytes
      * @param crc32c The CRC32C checksum value of the command's body
      */
-    void setCommandVerification(int size, long crc32c) {
+    void setCommandVerification(int size, int crc32c) {
         if (this.commandEndPosition > 0) {
             throw new IllegalStateException("Command verification cannot be set while a command is still in progress");
         }

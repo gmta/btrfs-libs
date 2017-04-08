@@ -3,9 +3,9 @@ package nl.gmta.btrfs.structure.stream;
 public class BtrfsCommandHeader {
     private final int length;
     private final BtrfsCommandType command;
-    private final long crc;
+    private final int crc;
 
-    public BtrfsCommandHeader(int length, BtrfsCommandType command, long crc) {
+    public BtrfsCommandHeader(int length, BtrfsCommandType command, int crc) {
         this.length = length;
         this.command = command;
         this.crc = crc;
@@ -19,7 +19,7 @@ public class BtrfsCommandHeader {
         return this.command;
     }
 
-    public long getCrc() {
+    public int getCrc() {
         return this.crc;
     }
 

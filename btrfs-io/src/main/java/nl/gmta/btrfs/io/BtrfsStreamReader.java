@@ -166,7 +166,7 @@ public class BtrfsStreamReader implements AutoCloseable {
 
         // The CRC32 checksum of the header + body (w/ zeroes for the checksum value itself)
         this.reader.setChecksumZeroBytes(true);
-        long crc = this.reader.readLE32() & 0xFFFFFFFFL;
+        int crc = this.reader.readLE32();
         this.reader.setChecksumZeroBytes(false);
 
         return new BtrfsCommandHeader(length, command, crc);
