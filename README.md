@@ -1,4 +1,4 @@
-# btrfs-libs
+# btrfs-libs [![Build Status](https://travis-ci.org/GMTA/btrfs-libs.svg?branch=master)](https://travis-ci.org/GMTA/btrfs-libs)
 
 Collection of Java structures and libraries for interacting with the btrfs filesystem.
 
