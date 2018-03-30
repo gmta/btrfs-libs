@@ -1,7 +1,7 @@
 package nl.gmta.btrfs.structure.stream;
 
 public class BtrfsStreamHeader extends BtrfsStreamElement {
-    public static final String MAGIC = "btrfs-stream";
+    public static final String MAGIC = "btrfs-stream\0";
 
     private final int version;
 
