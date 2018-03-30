@@ -8,8 +8,7 @@ import nl.gmta.btrfs.io.exception.BtrfsStructureException;
 import nl.gmta.linux.crypto.CRC32C;
 
 /**
- * VerifyingDataReader behaves as a {@link DataReader} but understands the concept of on-demand
- * loading of command bodies and verifies both command length and data CRC.
+ * VerifyingDataReader behaves as a {@link DataReader} but also verifies command length and CRC.
  */
 class VerifyingDataReader extends DataReader {
     private final Checksum checksum = new CRC32C();
